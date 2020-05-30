@@ -3,9 +3,17 @@
 
 using namespace std;
 
+enum Season
+{
+	Winter,
+	Spring,
+	Summer,
+	Autumn
+};
+
 class Product
 {
-private:
+protected:
 	string name;
 	string producer;
 	int price;
@@ -107,7 +115,7 @@ public:
 		this->quantity = quantity;
 	}
 
-	void Show()
+	virtual void Show() 
 	{
 		if (name.empty() || producer.empty())
 		{
@@ -123,21 +131,13 @@ public:
 	}
 };
 
-enum Season 
-{
-	Winter,
-	Spring,
-	Summer,
-	Autumn
-};
-
-class Vegetables : public Product
+class FruitOrVegetable : public Product
 {
 private:
 	Season collectionSeason;
 	
 public:
-	Vegetables(string name, string producer, int price, int storageLife, int quantity, Season season) 
+	FruitOrVegetable(string name, string producer, int price, int storageLife, int quantity, Season season)
 		: Product(name, producer, price, storageLife, quantity)
 	{
 		this->collectionSeason = season;
@@ -153,106 +153,83 @@ public:
 		this->collectionSeason = season;
 	}
 
+	void Show() override
+	{
+		if (name.empty() || producer.empty())
+		{
+			cout << "Set properties right!\n";
+			abort();
+		}
+
+		cout << "Name:\t\t" << name << endl;
+		cout << "Producer:\t" << producer << endl;
+		cout << "Season:\t" << collectionSeason << endl;
+		cout << "Price:\t\t" << price << " hrn" << endl;
+		cout << "Storage Life:\t" << storageLifeInDays << " days" << endl;
+		cout << "Quantity:\t" << quantity << endl;
+	}
 };
-int main()
+
+class Dairy : public Product
 {
-	/*Product product1("Vegetables", "Italy", 15, 21, 300);
-	Product product2("Vegetables", "Germany", 20, 21, 100);
-	Product product3("Fruits", "America", 5, 14, 500);
-	Product product4("Fruits", "Canada", 8, 14, 400);
-	Product product5("Dairy", "Finland", 60, 60, 200);*/
+private:
+	double fatPercentage;
+	
+public:
+	Dairy(string name, string producer, int price, int storageLife, int quantity, double fat)
+		: Product(name, producer, price, storageLife, quantity)
+	{
+		if (fat > 100 || fat < 0)
+			abort();
+
+		this->fatPercentage = fat;
+	}
+
+	double GetFat()
+	{
+		return fatPercentage;
+	}
+	void SetFatPercentage(double fat)
+	{
+		this->fatPercentage = fat;
+	}
+
+	void Show() override
+	{
+		if (name.empty() || producer.empty())
+		{
+			cout << "Set properties right!\n";
+			abort();
+		}
+
+		cout << "Name:\t\t" << name << endl;
+		cout << "Producer:\t" << producer << endl;
+		cout << "FatPercentage:\t" << fatPercentage<< endl;
+		cout << "Price:\t\t" << price << " hrn" << endl;
+		cout << "Storage Life:\t" << storageLifeInDays << " days" << endl;
+		cout << "Quantity:\t" << quantity << endl;
+	}
+};
+
+int main()
+{	
 	const int size = 5;
 	Product products[size] =
 	{
-		Product("Vegetables", "Italy", 15, 21, 300),
-		Product("Vegetables", "Germany", 20, 21, 100),
-		Product("Fruits", "America", 5, 14, 500),
-		Product("Fruits", "Canada", 8, 14, 400),
-		Product("Dairy", "Finland", 60, 60, 200)
+		FruitOrVegetable("apples", "Italy", 15, 21, 300, Season::Winter),
+		FruitOrVegetable("carrots", "Germany", 20, 21, 100, Season::Autumn),
+		FruitOrVegetable("onions", "America", 5, 14, 500, Season::Winter),
+		Dairy("milk", "Canada", 8, 14, 400, 2.5),
+		Dairy("butter", "Finland", 60, 60, 200, 82)
 	};
 
-	cout << "Lets show our products, choose the category: Vegetables/Fruits/Dairy\n";
-	string str;
-	cin >> str;
-	while (str != "Vegetables" && str != "Fruits" && str != "Dairy")
+	cout << "Lets show our products\n";
+	
+	for (int i = 0; i < size; i++)
 	{
-		cout << "Wrong category! Try again\n";
-		cin >> str;
+		products[i].Show();
 	}
-
-	if (str == "Vegetables")
-	{
-		int count = 1;
-		for (int i = 0; i < size; i++)
-		{
-			if (products[i].GetName() == str)
-			{
-				cout << "\nProduct " << count++ << endl;
-				products[i].Show();
-			}
-		}
-
-		cout << "\nSelect the highest price\n";
-		count = 1;
-		int price;
-		cin >> price;
-		for (int i = 0; i < size; i++)
-		{
-			if (products[i].GetPrice() < price && products[i].GetName() == str)
-			{
-				cout << "\nProduct " << count++ << endl;
-				products[i].Show();
-			}
-		}
-	}
-	else if (str == "Fruits")
-	{
-		int count = 1;
-		for (int i = 0; i < size; i++)
-		{
-			if (products[i].GetName() == str)
-			{
-				cout << "\nProduct " << count++ << endl;
-				products[i].Show();
-			}
-		}
-		cout << "\nSelect the highest price\n";
-		count = 1;
-		int price;
-		cin >> price;
-		for (int i = 0; i < size; i++)
-		{
-			if (products[i].GetPrice() < price && products[i].GetName() == str)
-			{
-				cout << "\nProduct " << count++ << endl;
-				products[i].Show();
-			}
-		}
-	}
-	else if (str == "Dairy")
-	{
-		int count = 1;
-		for (int i = 0; i < size; i++)
-		{
-			if (products[i].GetName() == str)
-			{
-				cout << "\nProduct " << count++ << endl;
-				products[i].Show();
-			}
-		}
-		cout << "\nSelect the highest price\n";
-		count = 1;
-		int price;
-		cin >> price;
-		for (int i = 0; i < size; i++)
-		{
-			if (products[i].GetPrice() < price && products[i].GetName() == str)
-			{
-				cout << "\nProduct " << count++ << endl;
-				products[i].Show();
-			}
-		}
-	}
+	cout << "\nLet's sort them!";
 
 	cout << "\nSelect the lowest storage term\n";
 	int num;
@@ -272,5 +249,7 @@ int main()
 			products[i].Show();
 		}
 	}
+
+
 	return 0;
 }
